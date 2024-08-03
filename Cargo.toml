@@ -1,0 +1,11 @@
+[package]
+name = "flute-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.86"
+clap = { version = "4.5.9", default-features = false, features = ["derive", "help", "std", "usage"] }
+env_logger = { version = "0.11.3", default-features = false }
+flute = "1.2.1"
+log = "0.4.22"
