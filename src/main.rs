@@ -43,6 +43,10 @@ struct SendCmd {
 struct ReceiveCmd {
     bind_addr: SocketAddr,
     dir: PathBuf,
+
+    /// Maximum cache size to keep file
+    #[clap(long, default_value = "100_000_000")]
+    maximum_file_size: usize,
 }
 
 mod utils;
@@ -113,8 +117,8 @@ fn main() -> anyhow::Result<()> {
                 std::thread::sleep(std::time::Duration::from_micros(delay_between_datagrams_us));
             }
         }
-        Command::Recv(ReceiveCmd { bind_addr, dir }) => {
-            let endpoint = UDPEndpoint::new(None, "224.0.0.1".to_string(), 3400);
+        Command::Recv(ReceiveCmd { bind_addr, dir, maximum_file_size }) => {
+            let endpoint = UDPEndpoint::new(None, format!("{}", bind_addr.ip()), bind_addr.port());
 
             let dest_dir = dir;
             if !dest_dir.is_dir() {
@@ -127,7 +131,7 @@ fn main() -> anyhow::Result<()> {
             let writer = Rc::new(writer::ObjectWriterFSBuilder::new(&dest_dir).ee()?);
 
             let mut config = flute::receiver::Config::default();
-            config.object_max_cache_size = Some(100_000_000);
+            config.object_max_cache_size = Some(maximum_file_size);
 
             let mut receiver = MultiReceiver::new(writer, Some(config), false);
 
