@@ -45,7 +45,7 @@ struct ReceiveCmd {
     dir: PathBuf,
 
     /// Maximum cache size to keep file
-    #[clap(long, default_value = "100_000_000")]
+    #[clap(long, default_value = "100000000")]
     maximum_file_size: usize,
 }
 
